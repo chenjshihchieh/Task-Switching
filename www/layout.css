@@ -1,0 +1,50 @@
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 80%;
+}
+
+.container-fluid {
+  width: 800px;
+  height: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+body {
+  background-color: black;
+}
+
+.stimuli_parent {
+  display: block;
+  position: relative;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 80%;
+}
+
+.stimuli_frame {
+  display: block;
+  position: relative;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: auto;
+  max-width: 80%;
+}
+
+.stimuli_top {
+  display: block;
+  position: absolute;
+  margin-left: 41%;
+  top:15%;
+  max-width: 80%;
+}
+
+.stimuli_bottom {
+  display: block;
+  position: absolute;
+  margin-left: 41%;
+  top:53%;
+  max-width: 80%;
+}
