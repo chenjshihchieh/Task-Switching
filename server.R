@@ -126,7 +126,6 @@ function(input, output, session){
         timer(timer() - 1)
         
       }else if(timer() == 1 & !timesup()){
-        timesup(TRUE)
         timer(0)
         
         
@@ -144,6 +143,7 @@ function(input, output, session){
           instruction(TRUE)
           countdown(TRUE)
         }
+        timesup(TRUE)
         onTrialQ(FALSE)
         emptyframe(TRUE)
         instruction.break(TRUE)
@@ -705,7 +705,7 @@ function(input, output, session){
                            Congruency,
                            Switch = taskSwitch,
                            Result,
-                           RT = reactiontime)
+                           RT = round(reactiontime, digit = 1))
       spacebar(TRUE)
       
     }
@@ -720,6 +720,13 @@ function(input, output, session){
                                                    response,
                                                    reactiontime))
   })
+  
+  output$downloadData <- downloadHandler(
+    filename = "results.csv",
+    content = function(file) {
+      write.csv(result, file, row.names = FALSE)
+    }
+  )
   
   #Main display to transition through pages based on a transitional variable####
   output$main.display <- renderUI({
@@ -756,52 +763,58 @@ function(input, output, session){
         
       }else{
         #Results trial where participants see and downloads their result
-        HTML(paste0("<center><h2>RT in pure trials: ", 
-             round(mean(reactiontime[Trial %in% c("Data-PureShape", "Data-PureFill")]),
-                   digit = 1),
-             "ms</h2></center>
+        
+        list(
+          HTML(paste0("<center><h2>RT in pure trials: ", 
+                      round(mean(reactiontime[Trial %in% c("Data-PureShape", "Data-PureFill")]),
+                            digit = 1),
+                      "ms</h2></center>
              <center><h2>RT in mixed trials: ", 
-             round(mean(reactiontime[Trial == "Data-Mix"]), 
-                   digit = 1
-                   ),
-             "ms</h2></center>
+                      round(mean(reactiontime[Trial == "Data-Mix"]), 
+                            digit = 1
+                      ),
+                      "ms</h2></center>
              <center><h2>Mixing Cost: ", 
-             round(
-               '-'(mean(reactiontime[Trial == "Data-Mix"]),
-                   mean(reactiontime[Trial %in% c("Data-PureShape", "Data-PureFill")])
-                   ),
-               digit = 1
-             ), 
-             "ms</h2></center>
+                      round(
+                        '-'(mean(reactiontime[Trial == "Data-Mix"]),
+                            mean(reactiontime[Trial %in% c("Data-PureShape", "Data-PureFill")])
+                        ),
+                        digit = 1
+                      ), 
+                      "ms</h2></center>
              </br>
              </br>
              <center><h2>RT in task task-repeat trial (in mix trials): ",
-             round(
-               mean(reactiontime[Trial == "Data-Mix" & taskSwitch]),
-               digit = 1
-             ),
-             "ms</h2></center>
+                      round(
+                        mean(reactiontime[Trial == "Data-Mix" & taskSwitch]),
+                        digit = 1
+                      ),
+                      "ms</h2></center>
              <center><h2>RT in task-switching trial (in mix trials): ",
-             round(
-               mean(reactiontime[Trial == "Data-Mix" & !taskSwitch]),
-               digit = 1
-             ),
-             "ms</h2></center>
+                      round(
+                        mean(reactiontime[Trial == "Data-Mix" & !taskSwitch]),
+                        digit = 1
+                      ),
+                      "ms</h2></center>
              <center><h2>Task-switching Cost: ",
-             round(
-               '-'(
-                 mean(reactiontime[Trial == "Data-Mix" & taskSwitch]),
-                 mean(reactiontime[Trial == "Data-Mix" & !taskSwitch])
-               ),
-               digit = 1
-             ),
-             "ms</h2></center>"
-             
-             
-                    )
-             )
+                      round(
+                        '-'(
+                          mean(reactiontime[Trial == "Data-Mix" & taskSwitch]),
+                          mean(reactiontime[Trial == "Data-Mix" & !taskSwitch])
+                        ),
+                        digit = 1
+                      ),
+                      "ms</h2></center>
+                      </br>
+                      Feel free to press the download button to download your results"
+                      
+                      
+          )
+          ),
+          
+          downloadButton("downloadData", "Download")
+        )
         
-        #downloadButton("downloadData", "Download")
         
         
       }
