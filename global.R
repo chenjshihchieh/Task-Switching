@@ -103,6 +103,7 @@ response <- vector(mode = "character",
 reactiontime <- vector(mode = "numeric", 
                        length = triallen.total)
 
+
 # answer to stimuli and name of stimuli
 if(train.fillFirst){
   answer <- c(stimuli.info[train.fill.index, "fill"],
@@ -128,6 +129,9 @@ if(train.fillFirst){
   
 }
 
+#Whether or not the task is switched into
+#The first stimuli of mix trial is always not switch
+taskSwitch <- rep(0, (triallen.train * 2) + 1) 
 
 #Answer and stimuli for mix condition
 i <- 1
@@ -148,6 +152,10 @@ while(i <= triallen.mixtrain){
   }
   
   i <- i + 1
+  if(i <= triallen.mixtrain){
+    taskSwitch <- c(taskSwitch, 
+                as.numeric(train.mix.position[i-1] != train.mix.position[i]))
+  }
   
 }
 
@@ -183,6 +191,8 @@ if(data.fillFirst){
   
 }
 
+#The first stimuli of mix trial is always not switch
+taskSwitch <- c(taskSwitch, rep(0, (triallen.data * 2) + 1))
 
 #Answer and stimuli for mix condition
 i <- 1
@@ -203,6 +213,9 @@ while(i <= triallen.mixdata){
   }
   
   i <- i + 1
-  
+  if(i <= triallen.mixdata){
+    taskSwitch <- c(taskSwitch, 
+                as.numeric(data.mixPosition[i-1] != data.mixPosition[i]))
+  }
 }
 

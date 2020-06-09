@@ -10,8 +10,9 @@ fluidPage(
     ),
     actionButton("start", "Start"),
     uiOutput("main.display"),
-    tableOutput("responseTable"),
-    tableOutput("answerTable")
+    verbatimTextOutput('transitionNumber'),
+    verbatimTextOutput('otherinfo'),
+    tableOutput("responseTable")
     
     
   )

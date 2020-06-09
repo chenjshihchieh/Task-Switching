@@ -31,7 +31,7 @@ function(input, output, session){
         #Registering key press. Assess correctness later
         response[i]     <<- as.character(input$keypress)
         #Record reaction time
-        reactiontime[i] <<- RT
+        reactiontime[i] <<- RT * 1000
         
         #Make sure an empty frame comes up
         emptyframe(TRUE)
@@ -57,6 +57,7 @@ function(input, output, session){
         
         
         
+        
       }
     }
     
@@ -65,12 +66,12 @@ function(input, output, session){
     #for starting tasks, moving on to next section of tasks
     if(input$keypress == 32 & transition() < 11 & input$start > 0){
       transition(transition() + 1)
+    }else if(input$keypress == 32 & spacebar() & transition() > data.trialMix){
+      transition(transition() + 1)
     }else if(input$keypress == 32 & readyprompt() & spacebar()){
       readyprompt(FALSE)
     }else if(input$keypress == 32 & instruction() & spacebar()){
       instruction(FALSE)
-    }else if(input$keypress == 32 & spacebar() & transition() > data.trialMix){
-      transition(transition() + 1)
     }
     
     
@@ -111,7 +112,6 @@ function(input, output, session){
         countdown(FALSE)
         
         
-        
       }else if(emptyframe.count() == 1){
         background("frame.png")
         stimuli.object("empty.png")
@@ -134,7 +134,7 @@ function(input, output, session){
         #Record the response as 9999
         i            <- transition() - info.end
         response[i]     <<- 9999
-        reactiontime[i] <<- 4
+        reactiontime[i] <<- 4000
         
         
         # Check if it's end of the trial
@@ -144,7 +144,7 @@ function(input, output, session){
           instruction(TRUE)
           countdown(TRUE)
         }
-        
+        onTrialQ(FALSE)
         emptyframe(TRUE)
         instruction.break(TRUE)
         timesup(FALSE)
@@ -171,25 +171,25 @@ function(input, output, session){
     })
   })
   
-  #For instructions that display for a certain amount of time
-  observe({
-    if(emptyframe()){
-      Sys.sleep(1)
-      emptyframe(TRUE)
-    }
-  })
   
   #First train trials####
   observe({
     if(transition() > info.end & transition() <= train.trial1){
       
-      if(instruction.break()){
-        if(train.fillFirst){ #If fill is first, then 1st trial is fill
-          background(file.path("instructions", "fillinginstruction.png"))
+      if(wrongbutton()) { #Trigger only with logical statement
+        #Wrong button messages - pop up only when triggered
+        # change logical to FALSE
+        background(file.path("comments", "wrongkey.png"))
+        stimuli.object("empty.png")
+        
+        
+      }else if(instruction.break()){
+        if(position() == "stimuli_top"){
+          background(file.path("instructions", "shapeinstruction.png"))
           stimuli.object("empty.png")
           
-        }else{
-          background(file.path("instructions", "shapeinstruction.png"))
+        }else if(position() == "stimuli_bottom"){
+          background(file.path("instructions", "fillinginstruction.png"))
           stimuli.object("empty.png")
           
         }
@@ -210,13 +210,6 @@ function(input, output, session){
           background(file.path("readyGo", "gojustshape.png"))
           stimuli.object("empty.png")
         }
-        
-        
-      }else if(wrongbutton()) { #Trigger only with logical statement
-        #Wrong button messages - pop up only when triggered
-        # change logical to FALSE
-        background(file.path("comments", "wrongkey.png"))
-        stimuli.object("empty.png")
         
         
       }else if(countdown()) { #Need Logical
@@ -274,12 +267,20 @@ function(input, output, session){
   # observe({
     if(transition() > train.trial1 & transition() <= train.trial2){
       
-      if(instruction.break()){
-        if(train.fillFirst){#If fill was first, then second trial is shape
+      if(wrongbutton()) { #Trigger only with logical statement
+        #Wrong button messages - pop up only when triggered
+        # change logical to FALSE
+        background(file.path("comments", "wrongkey.png"))
+        stimuli.object("empty.png")
+        
+        
+      }else if(instruction.break()){
+        
+        if(position() == "stimuli_top"){
           background(file.path("instructions", "shapeinstruction.png"))
           stimuli.object("empty.png")
           
-        }else{
+        }else if(position() == "stimuli_bottom"){
           background(file.path("instructions", "fillinginstruction.png"))
           stimuli.object("empty.png")
           
@@ -298,13 +299,6 @@ function(input, output, session){
         }else{
           background(file.path("readyGo", "gojustfilling.png"))
         }
-        
-        
-      }else if(wrongbutton()) { #Trigger only with logical statement
-        #Wrong button messages - pop up only when triggered
-        # change logical to FALSE
-        background(file.path("comments", "wrongkey.png"))
-        stimuli.object("empty.png")
         
         
       }else if(countdown()) { #Need Logical
@@ -332,8 +326,8 @@ function(input, output, session){
         position(switch(2 - train.fillFirst, #assigning stimuli position 
                         "stimuli_top", #For second trial, if fillFirst was TRUE(1),
                         "stimuli_bottom"     #then 1 should be top for trial two.
-        )
-        )
+                        )
+                 )
         
         
         if(train.fillFirst){
@@ -362,7 +356,15 @@ function(input, output, session){
   # observe({
     if(transition() > train.trial2 & transition() <= train.trialMix){
       
-      if(instruction.break()){
+      if(wrongbutton()) { #Trigger only with logical statement
+        #Wrong button messages - pop up only when triggered
+        # change logical to FALSE
+        background(file.path("comments", "wrongkey.png"))
+        stimuli.object("empty.png")
+        
+        
+      }else if(instruction.break()){
+        
         if(position() == "stimuli_top"){
           background(file.path("instructions", "shapeinstruction.png"))
           stimuli.object("empty.png")
@@ -383,13 +385,6 @@ function(input, output, session){
         spacebar(TRUE) #Activate spacebar
         #show the ready prompt
         background(file.path("readyGo", "gomix.png"))
-        stimuli.object("empty.png")
-        
-        
-      }else if(wrongbutton()) { #Trigger only with logical statement
-        #Wrong button messages - pop up only when triggered
-        # change logical to FALSE
-        background(file.path("comments", "wrongkey.png"))
         stimuli.object("empty.png")
         
         
@@ -432,7 +427,15 @@ function(input, output, session){
   # observe({
     if(transition() > train.trialMix & transition() <= data.trial1){
       
-      if(instruction.break()){
+      if(wrongbutton()) { #Trigger only with logical statement
+        #Wrong button messages - pop up only when triggered
+        # change logical to FALSE
+        background(file.path("comments", "wrongkey.png"))
+        stimuli.object("empty.png")
+        
+        
+      }else if(instruction.break()){
+        
         if(position() == "stimuli_top"){
           background(file.path("instructions", "shapeinstruction.png"))
           stimuli.object("empty.png")
@@ -459,13 +462,6 @@ function(input, output, session){
         }else{
           background(file.path("readyGo", "gojustshape.png"))
         }
-        
-        
-      }else if(wrongbutton()) { #Trigger only with logical statement
-        #Wrong button messages - pop up only when triggered
-        # change logical to FALSE
-        background(file.path("comments", "wrongkey.png"))
-        stimuli.object("empty.png")
         
         
       }else if(countdown()) { #Need Logical
@@ -521,7 +517,14 @@ function(input, output, session){
   # observe({
     if(transition() > data.trial1 & transition() <= data.trial2){
       
-      if(instruction.break()){
+      if(wrongbutton()) { #Trigger only with logical statement
+        #Wrong button messages - pop up only when triggered
+        # change logical to FALSE
+        background(file.path("comments", "wrongkey.png"))
+        stimuli.object("empty.png")
+        
+        
+      }else if(instruction.break()){
         if(position() == "stimuli_top"){
           background(file.path("instructions", "shapeinstruction.png"))
           stimuli.object("empty.png")
@@ -545,13 +548,6 @@ function(input, output, session){
         }else{
           background(file.path("readyGo", "gojustfilling.png"))
         }
-        
-        
-      }else if(wrongbutton()) { #Trigger only with logical statement
-        #Wrong button messages - pop up only when triggered
-        # change logical to FALSE
-        background(file.path("comments", "wrongkey.png"))
-        stimuli.object("empty.png")
         
         
       }else if(countdown()) { #Need Logical
@@ -607,7 +603,14 @@ function(input, output, session){
   # observe({
     if(transition() > data.trial2 & transition() <= data.trialMix){
       
-      if(instruction.break()){
+      if(wrongbutton()) { #Trigger only with logical statement
+        #Wrong button messages - pop up only when triggered
+        # change logical to FALSE
+        background(file.path("comments", "wrongkey.png"))
+        stimuli.object("empty.png")
+        
+        
+      }else if(instruction.break()){
         if(position() == "stimuli_top"){
           background(file.path("instructions", "shapeinstruction.png"))
           stimuli.object("empty.png")
@@ -628,13 +631,6 @@ function(input, output, session){
         #Instruct for which condition P is doing
         spacebar(TRUE) #Activate spacebar
         background(file.path("readyGo", "gomix.png"))
-        stimuli.object("empty.png")
-        
-        
-      }else if(wrongbutton()) { #Trigger only with logical statement
-        #Wrong button messages - pop up only when triggered
-        # change logical to FALSE
-        background(file.path("comments", "wrongkey.png"))
         stimuli.object("empty.png")
         
         
@@ -672,13 +668,16 @@ function(input, output, session){
     
     if(transition() == data.trialMix + 1){
       
+      background(file.path("comments", "thankyou.png"))
+      stimuli.object("empty.png")
+      
       #Generate result
-      Result <<- response == answer
+      Result <<- as.character(response == answer)
       i <- 1
       while(i <= length(response)){
-        Result[i] <<- switch(Result[i] + 1,
-                            "Incorrect",
-                            "Correct")
+        Result[i] <<- switch(Result[i],
+                            "FALSE" = "Incorrect",
+                            "TRUE" = "Correct")
         i <- i + 1
       }
       
@@ -698,23 +697,29 @@ function(input, output, session){
         i <- i + 1
       }
       
+      
+      
       #Combining the variables
       result <<- data.frame(Trial, 
                            Stimuli = stimuli, 
-                           Result, 
-                           Congruency, 
+                           Congruency,
+                           Switch = taskSwitch,
+                           Result,
                            RT = reactiontime)
+      spacebar(TRUE)
+      
     }
   })
   
   #For testing, See if answers are being saved####
   observe({
     transition()
-    output$responseTable <- renderTable(data.frame(response,
-                                              reactiontime))
+    output$transitionNumber <- renderPrint(paste(transition(), position()))
+    output$otherinfo <- renderPrint(paste(background(), stimuli.object()))
+    output$responseTable <- renderTable(data.frame(stimuli,
+                                                   response,
+                                                   reactiontime))
   })
-  
-  output$answerTable   <- renderTable(answer)
   
   #Main display to transition through pages based on a transitional variable####
   output$main.display <- renderUI({
@@ -739,28 +744,64 @@ function(input, output, session){
         
         
       }else if(transition() == data.trialMix + 1){
-        background(file.path("comments", "thankyou.png"))
-        stimuli.object("empty.png")
+        HTML(paste0("<center>", 
+                    tags$div(
+                      img(src = background(), class = "stimuli_frame"),
+                      img(src = stimuli.object(), class = position()),
+                      class = "stimuli_parent"
+                    )
+                    , "</center>"))
+        
         
         
       }else{
         #Results trial where participants see and downloads their result
-        HTML(paste0("<center>RT in pure trials: ", 
-             mean(reactiontime[Trial %in% c("Data-PureShape", "Data-PureFill")]), 
-             "</center>
-             <br/>
-             <center>RT in mixed trials: ", 
-             mean(reactiontime[ Trial == "Data-Mix"]), 
-             "</center>
-             <br/>
-             <center>Mixing Cost: ", 
-             '-'(mean(reactiontime[ Trial == "Data-Mix"]),
-                 mean(reactiontime[Trial %in% c("Data-PureShape", "Data-PureFill")])), 
-             "</center>"
+        HTML(paste0("<center><h2>RT in pure trials: ", 
+             round(mean(reactiontime[Trial %in% c("Data-PureShape", "Data-PureFill")]),
+                   digit = 1),
+             "ms</h2></center>
+             <center><h2>RT in mixed trials: ", 
+             round(mean(reactiontime[Trial == "Data-Mix"]), 
+                   digit = 1
+                   ),
+             "ms</h2></center>
+             <center><h2>Mixing Cost: ", 
+             round(
+               '-'(mean(reactiontime[Trial == "Data-Mix"]),
+                   mean(reactiontime[Trial %in% c("Data-PureShape", "Data-PureFill")])
+                   ),
+               digit = 1
+             ), 
+             "ms</h2></center>
+             </br>
+             </br>
+             <center><h2>RT in task task-repeat trial (in mix trials): ",
+             round(
+               mean(reactiontime[Trial == "Data-Mix" & taskSwitch]),
+               digit = 1
+             ),
+             "ms</h2></center>
+             <center><h2>RT in task-switching trial (in mix trials): ",
+             round(
+               mean(reactiontime[Trial == "Data-Mix" & !taskSwitch]),
+               digit = 1
+             ),
+             "ms</h2></center>
+             <center><h2>Task-switching Cost: ",
+             round(
+               '-'(
+                 mean(reactiontime[Trial == "Data-Mix" & taskSwitch]),
+                 mean(reactiontime[Trial == "Data-Mix" & !taskSwitch])
+               ),
+               digit = 1
+             ),
+             "ms</h2></center>"
              
-             #downloadButton("downloadData", "Download")
+             
                     )
              )
+        
+        #downloadButton("downloadData", "Download")
         
         
       }
